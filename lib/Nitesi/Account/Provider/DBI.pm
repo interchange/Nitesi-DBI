@@ -4,10 +4,9 @@ use strict;
 use warnings;
 
 use base 'Nitesi::Object';
+use Nitesi::Query::DBI;
 
 __PACKAGE__->attributes(qw/dbh/);
-
-use SQL::Abstract;
 
 =head1 NAME
 
@@ -27,7 +26,7 @@ sub init {
     my ($self, %args) = @_;
     my ($sql);
 
-    $self->{sql} = new SQL::Abstract;
+    $self->{sql} = Nitesi::Query::DBI->new(dbh => $self->{dbh});
 }
 
 =head2 login
@@ -60,10 +59,12 @@ List of permissions for this user.
 
 sub login {
     my ($self, %args) = @_;
-    my ($ret, @roles, @permissions);
+    my ($results, $ret, @roles, @permissions);
 
-    $ret = $self->select(table => 'users', fields => [qw/uid username password/], 
-			 where => {email => $args{username}});
+    $results = $self->{sql}->select(table => 'users', fields => [qw/uid username password/], 
+				    where => {email => $args{username}});
+
+    $ret = $results->[0];
 
     if ($ret && $args{password} eq $ret->{password}) {
 	# retrieve permissions
@@ -87,10 +88,9 @@ sub roles {
     my ($self, $uid) = @_;
     my (@roles);
 
-    @roles = $self->select(table => 'user_roles', 
-			   fields => [qw/rid/], 
-			   where => {uid => $uid},
-			   return_value => 'array_first');
+    @roles = $self->{sql}->select_list_field(table => 'user_roles', 
+					     fields => [qw/rid/], 
+					     where => {uid => $uid});
 
     return @roles;
 }
@@ -106,34 +106,11 @@ sub permissions {
     my ($self, $uid, $roles_ref) = @_;
     my (@records, @permissions, $sth, $row, $roles_str);
 
-    @permissions = $self->select(table => 'permissions',
-				 fields => [qw/perm/],
-				 where => [{uid => $uid}, {rid => {-in => $roles_ref}}],
-				 return_value => 'array_first');
+    @permissions = $self->{sql}->select_list_field(table => 'permissions',
+						   fields => [qw/perm/],
+						   where => [{uid => $uid}, {rid => {-in => $roles_ref}}]);
 	
     return @permissions;
-}
-
-=head2 select
-
-Runs SQL queries.
-
-=cut
-
-sub select {
-    my ($self, %args) = @_;
-    my ($stmt, @bind, $sth);
-
-    ($stmt, @bind) = $self->{sql}->select($args{table}, $args{fields}, $args{where});
-
-    $sth = $self->{dbh}->prepare($stmt);
-    $sth->execute(@bind);
-
-    if ($args{return_value} eq 'array_first') {
-	return map {$_->[0]} @{$sth->fetchall_arrayref()};
-    }
-
-    return $sth->fetchrow_hashref();
 }
 
 =head1 AUTHOR
