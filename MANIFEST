@@ -1,0 +1,13 @@
+Changes
+ignore.txt
+lib/Nitesi/Account/Provider/DBI.pm
+lib/Nitesi/DBI.pm
+lib/Nitesi/Query/DBI.pm
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+README
+t/00-load.t
+t/manifest.t
+t/pod-coverage.t
+t/pod.t
