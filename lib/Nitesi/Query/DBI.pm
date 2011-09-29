@@ -69,8 +69,13 @@ sub select {
     my ($self, %args) = @_;
     my ($stmt, @bind, @fields);
 
-    @fields= ref($args{fields}) eq 'ARRAY' ? @{$args{fields}} : split /\s+/, $args{fields};
-
+    if (exists $args{fields}) {
+	@fields= ref($args{fields}) eq 'ARRAY' ? @{$args{fields}} : split /\s+/, $args{fields};
+    }
+    else {
+	@fields = ('*');
+    }
+    
     if ($args{join}) {
 	my @join = ref($args{join}) eq 'ARRAY' ? @{$args{join}} : split /\s+/, $args{join};
 
