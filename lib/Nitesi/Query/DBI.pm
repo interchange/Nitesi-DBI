@@ -82,10 +82,12 @@ sub select {
 	# extended syntax for a join
 	($stmt, @bind) = $self->{sqla}->select(-columns => \@fields,
 					       -from => [-join => @join], 
-					       -where => $args{where});
+					       -where => $args{where},
+					       -order_by => $args{order},
+	    				      );
     }
     else {
-	($stmt, @bind) = $self->{sqla}->select($args{table}, \@fields, $args{where});
+	($stmt, @bind) = $self->{sqla}->select($args{table}, \@fields, $args{where}, $args{order});
     }
 
     return $self->_run($stmt, \@bind, %args);
