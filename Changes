@@ -1,5 +1,11 @@
 Revision history for Nitesi::DBI
 
+0.0003 Tue Oct  4 11:50:55 2011 EDT
+
+    [ENHANCEMENTS]
+
+    * Add limit parameter to select method.
+
 0.0002 Thu Sep 29 13:54:10 2011 CEST
 
     [ENHANCEMENTS]
