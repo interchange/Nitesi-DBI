@@ -13,7 +13,9 @@ Nitesi::Query::DBI - DBI query engine for Nitesi
 
     $query->select(table => 'products',
                    fields => [qw/sku name price/],
-                   where => {price < 5}););
+                   where => {price < 5},
+                   order => 'name',
+                   limit => 10);
 
     $query->insert('products', {sku => '9780977920150', name => 'Modern Perl'});
 
@@ -67,7 +69,7 @@ Runs query and returns records as hash references inside a array reference.
 
 sub select {
     my ($self, %args) = @_;
-    my ($stmt, @bind, @fields);
+    my ($stmt, @bind, @fields, %extended);
 
     if (exists $args{fields}) {
 	@fields= ref($args{fields}) eq 'ARRAY' ? @{$args{fields}} : split /\s+/, $args{fields};
@@ -79,11 +81,24 @@ sub select {
     if ($args{join}) {
 	my @join = ref($args{join}) eq 'ARRAY' ? @{$args{join}} : split /\s+/, $args{join};
 
-	# extended syntax for a join
+	$extended{-from} = [-join => @join];
+    }
+
+    if ($args{limit}) {
+	$extended{-limit} = $args{limit};
+    }
+
+    if (keys %extended) {
+	# extended syntax for a join / limit
+	$extended{-from} ||= $args{table};
+
+	if ($args{order}) {
+	    $extended{-order_by} = $args{order};
+	}
+
 	($stmt, @bind) = $self->{sqla}->select(-columns => \@fields,
-					       -from => [-join => @join], 
 					       -where => $args{where},
-					       -order_by => $args{order},
+					       %extended,
 	    				      );
     }
     else {
