@@ -114,7 +114,7 @@ Runs query and returns value for the first field (or undef).
 
     $name = $query->select_field(table => 'products', 
                                  field => 'name', 
-                                 {sku => '9780977920150'});
+                                 where => {sku => '9780977920150'});
 
 =cut
 
