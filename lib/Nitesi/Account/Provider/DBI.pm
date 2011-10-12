@@ -6,7 +6,7 @@ use warnings;
 use base 'Nitesi::Object';
 use Nitesi::Query::DBI;
 
-__PACKAGE__->attributes(qw/dbh fields/);
+__PACKAGE__->attributes(qw/dbh crypt fields/);
 
 =head1 NAME
 
@@ -18,7 +18,22 @@ Nitesi::Account:Provider::DBI - DBI Account Provider for Nitesi Shop Machine
 
 =head2 init
 
-Initializer for this class. No arguments.
+Initializer for this class. Arguments are:
+
+=over 4
+
+=item dbh
+
+DBI handle (required).
+
+=item crypt
+
+L<Account::Manager::Password> instance (required).
+
+=item fields
+
+List of fields (as array reference) to be retrieved from the
+database and put into account data return by login method.
 
 =cut
 
@@ -72,7 +87,7 @@ sub login {
 
     $ret = $results->[0];
 
-    if ($ret && $args{password} eq $ret->{password}) {
+    if ($ret && $self->{crypt}->check($ret->{password}, $args{password})) {
 	# retrieve permissions
 	@roles = $self->roles($ret->{uid});
 	@permissions = $self->permissions($ret->{uid}, \@roles);
@@ -129,6 +144,42 @@ sub permissions {
 						   where => [{uid => $uid}, {rid => {-in => $roles_ref}}]);
 	
     return @permissions;
+}
+
+=head2 password
+
+Set password.
+
+=cut
+
+sub password {
+    my ($self, $password, $username) = @_;
+    my ($uid);
+
+    if ($username) {
+	if ($uid = $self->exists($username)) {
+	    $self->{sql}->update('users', 
+				 {password => $password}, 
+				 {uid => $uid});
+
+	    return 1;
+	}
+    }
+}
+
+=head2 exists
+
+=cut
+
+sub exists {
+    my ($self, $username) = @_;
+    my ($results);
+
+    $results = $self->{sql}->select_field(table => 'users',
+					  fields => ['uid'],
+					  where => {username => $username});
+
+    return $results;
 }
 
 =head1 AUTHOR
