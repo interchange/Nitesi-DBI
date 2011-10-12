@@ -6,7 +6,7 @@ use warnings;
 use base 'Nitesi::Object';
 use Nitesi::Query::DBI;
 
-__PACKAGE__->attributes(qw/dbh/);
+__PACKAGE__->attributes(qw/dbh fields/);
 
 =head1 NAME
 
@@ -59,9 +59,15 @@ List of permissions for this user.
 
 sub login {
     my ($self, %args) = @_;
-    my ($results, $ret, @roles, @permissions);
+    my ($results, $ret, @roles, @permissions, @fields, $acct);
 
-    $results = $self->{sql}->select(table => 'users', fields => [qw/uid username password/], 
+    @fields = qw/uid username password/;
+
+    if (defined $self->{fields}) {
+	push @fields, @{$self->{fields}};
+    }
+
+    $results = $self->{sql}->select(table => 'users', fields => join(',', @fields),
 				    where => {email => $args{username}});
 
     $ret = $results->[0];
@@ -71,8 +77,20 @@ sub login {
 	@roles = $self->roles($ret->{uid});
 	@permissions = $self->permissions($ret->{uid}, \@roles);
 
-	return {uid => $ret->{uid}, username => $ret->{username},
-		roles => \@roles, permissions => \@permissions};
+	$acct = {};
+
+	if (defined $self->{fields}) {
+	    for my $f (@{$self->{fields}}) {
+		$acct->{$f} = $ret->{$f};
+	    }
+	}
+
+	$acct->{uid} = $ret->{uid};
+	$acct->{username} = $ret->{username};
+	$acct->{roles} = \@roles;
+	$acct->{permissions} = \@permissions;
+
+	return $acct;
     }
 
     return 0;
