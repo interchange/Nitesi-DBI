@@ -16,6 +16,7 @@ WriteMakefile(
         'Test::More' => 0,
 	'SQL::Abstract' => 0,
 	'SQL::Abstract::More' => 0,
+        'Nitesi' => 0.0010,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Nitesi-DBI-*' },
