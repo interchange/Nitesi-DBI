@@ -1,5 +1,20 @@
 Revision history for Nitesi::DBI
 
+0.0010 Thu Oct 13 09:10:59 2011 EDT
+
+    [ENHANCEMENTS]
+
+    * Add exists and password method to account provider class.
+    * Add fields attribute to account provider class.
+
+    [BUG FIXES]
+
+    * Add dependency on Nitesi to Makefile.PL.
+
+    [DOCUMENTATION]
+
+    * Fix code example for select_field method.
+
 0.0003 Tue Oct  4 11:50:55 2011 EDT
 
     [ENHANCEMENTS]
