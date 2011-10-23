@@ -227,6 +227,8 @@ sub password {
 
 =head2 exists
 
+Check whether user exists.
+
 =cut
 
 sub exists {
