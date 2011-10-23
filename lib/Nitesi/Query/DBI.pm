@@ -23,7 +23,7 @@ Nitesi::Query::DBI - DBI query engine for Nitesi
 
     $query->delete('products', {inactive => 1});
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 This query engine is based on L<SQL::Abstract> and L<SQL::Abstract::More>.
 
