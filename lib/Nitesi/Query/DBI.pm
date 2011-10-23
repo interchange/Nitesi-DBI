@@ -134,14 +134,18 @@ sub select_field {
 
 Runs query and returns a list of the first field for all matching records, e.g.:
 
-    @dvd_skus = $query->select_list(table => 'products',
-                                    fields => 'sku',
+    @dvd_skus = $query->select_list_field(table => 'products',
+                                    field => 'sku',
                                     where => {media_type => 'DVD'});
 
 =cut
 
 sub select_list_field {
     my ($self, %args) = @_;
+
+    if ($args{field}) {
+	$args{fields} = [delete $args{field}];
+    }
 
     $args{return_value} = 'array_first';
 
