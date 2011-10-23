@@ -168,6 +168,42 @@ sub permissions {
     return @permissions;
 }
 
+=head2 value
+
+Get or set value.
+
+=cut
+
+sub value {
+    my ($self, $username, $name, $value, $uid);
+
+    $self = shift;
+    $username = shift;
+    $name = shift;
+
+    if ($uid = $self->exists($username)) {
+	if (@_) {
+	    # set value
+	    $value = shift;
+
+	    $self->{sql}->update(table => 'users',
+				 set => {$name => $value},
+				 where => {uid => $uid}); 
+
+	    return 1;
+	}
+
+	# retrieve value
+	$value = $self->{sql}->select_field(table => 'users',
+					    field => $name,
+					    where => {uid => $uid});
+
+	return $value;
+    }
+    
+    return;
+}
+
 =head2 password
 
 Set password.
