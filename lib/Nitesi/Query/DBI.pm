@@ -69,7 +69,7 @@ Runs query and returns records as hash references inside a array reference.
 
 sub select {
     my ($self, %args) = @_;
-    my ($stmt, @bind, @fields, %extended);
+    my ($stmt, @bind, @fields, %extended, @sql_params);
 
     if (exists $args{fields}) {
 	@fields= ref($args{fields}) eq 'ARRAY' ? @{$args{fields}} : split /\s+/, $args{fields};
@@ -96,13 +96,21 @@ sub select {
 	    $extended{-order_by} = $args{order};
 	}
 
-	($stmt, @bind) = $self->{sqla}->select(-columns => \@fields,
-					       -where => $args{where},
-					       %extended,
-	    				      );
+	@sql_params = (-columns => \@fields,
+		       -where => $args{where},
+		       %extended,
+	    );
     }
     else {
-	($stmt, @bind) = $self->{sqla}->select($args{table}, \@fields, $args{where}, $args{order});
+	@sql_params = ($args{table}, \@fields, $args{where}, $args{order});
+    }
+
+    eval {
+	($stmt, @bind) = $self->{sqla}->select(@sql_params);
+    };
+
+    if ($@) {
+	die "Failed to parse select parameters (", join(',', @sql_params) , ": $@\n";
     }
 
     return $self->_run($stmt, \@bind, %args);
