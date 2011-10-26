@@ -1,5 +1,30 @@
 Revision history for Nitesi::DBI
 
+0.0020 Wed Oct 26 16:28:03 2011 CEST
+
+    [API CHANGES]
+
+    * Change semantic of roles account method to return role names
+      instead of role identifiers.
+
+    [ENHANCEMENTS]
+
+    * Extend value method of DBI account provider with setting account values.
+    * Wrap calls to SQL::Abstract(::More)'s select into an eval.
+
+    [BUG FIXES]
+
+    * Allow field as parameter to select_list_field query method analogous to select_field.
+
+    [DOCUMENTATION]
+
+    * Use =head1 for description in Nitesi::Query::DBI's POD.
+    * Add description to POD for DBI provider's exists method.
+
+    [TESTS]
+
+    * Add very basic test for Nitesi::Query::DBI.
+
 0.0010 Thu Oct 13 09:10:59 2011 EDT
 
     [ENHANCEMENTS]
