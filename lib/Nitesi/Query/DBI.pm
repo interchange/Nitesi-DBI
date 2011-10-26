@@ -271,6 +271,25 @@ sub _run {
     return \@result;
 }
 
+# private methods for testing, likely to promoted to public methods in the future
+sub _create_table {
+    my ($self, $table, $fields) = @_;
+    my ($stmt, @bind);
+
+    $stmt = $self->{sqla}->generate('create table', $table, $fields);
+
+    $self->_run($stmt, [], return_value => 'execute');
+}
+
+sub _drop_table {
+    my ($self, $table, $fields) = @_;
+    my ($stmt, @bind);
+
+    $stmt = $self->{sqla}->generate('drop table', $table);
+
+    $self->_run($stmt, [], return_value => 'execute');
+}
+
 =head1 CAVEATS
 
 Please anticipate API changes in this early state of development.
