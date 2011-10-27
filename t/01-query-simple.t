@@ -10,8 +10,13 @@ my (@handles, $dbh, $q, $ret);
 # get handle, weed out ones that fail on create table with "Insecure dependency"
 @handles = grep {$_->dbd ne 'DBM'} Test::Database->handles();
 
-# number of tests
-plan tests => 2 * @handles;
+if (@handles) {
+    # determine number of tests
+    plan tests => 2 * @handles;
+}
+else {
+    plan skip_all => 'No test database handles available';
+}
 
 # NOTE:
 # for some odd reasons tables are create by SQL::Abstract in uppercase :-(
