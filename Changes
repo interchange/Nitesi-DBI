@@ -1,5 +1,11 @@
 Revision history for Nitesi::DBI
 
+0.0030 Sat Oct 29 13:21:28 2011 CEST
+
+    [BUG FIXES]
+
+    * Skip query tests when database handles aren't available.
+
 0.0020 Wed Oct 26 16:28:03 2011 CEST
 
     [API CHANGES]
