@@ -290,6 +290,14 @@ sub _drop_table {
     $self->_run($stmt, [], return_value => 'execute');
 }
 
+=head2 dbh
+
+Returns DBI database handle.
+
+=head2 sqla
+
+Returns embedded SQL::Abstract::More object.
+
 =head1 CAVEATS
 
 Please anticipate API changes in this early state of development.
