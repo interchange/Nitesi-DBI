@@ -2,7 +2,7 @@ NAME
     Nitesi::DBI - DBI bundle for Nitesi shop machine
 
 VERSION
-    Version 0.0030
+    Version 0.0031
 
 DESCRIPTION
     This bundle contains:

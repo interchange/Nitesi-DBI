@@ -1,5 +1,15 @@
 Revision history for Nitesi::DBI
 
+0.0031 Sun Oct 30 10:38:40 2011 CET
+
+    [TESTS]
+
+    * Remove -T switch from simple query test.
+
+    [DOCUMENTATION]
+
+    * Add documentation for dbh and sqla accessors.
+
 0.0030 Sat Oct 29 13:21:28 2011 CEST
 
     [BUG FIXES]
