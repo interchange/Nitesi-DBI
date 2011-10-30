@@ -1,4 +1,4 @@
-#! perl -T
+#! perl
 
 use Test::More;
 use Test::Database;
@@ -7,8 +7,7 @@ use Nitesi::Query::DBI;
 
 my (@handles, $dbh, $q, $ret);
 
-# get handle, weed out ones that fail on create table with "Insecure dependency"
-@handles = grep {$_->dbd ne 'DBM'} Test::Database->handles();
+@handles = Test::Database->handles();
 
 if (@handles) {
     # determine number of tests
