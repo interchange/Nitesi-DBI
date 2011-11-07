@@ -5,6 +5,9 @@ use Test::Database;
 
 use Nitesi::Query::DBI;
 
+# statements produced by SQL::Abstract are not understood by DBI::SQL::Nano
+use SQL::Statement;
+
 my (@handles, $dbh, $q, $ret);
 
 @handles = Test::Database->handles();

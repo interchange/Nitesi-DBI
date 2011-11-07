@@ -302,6 +302,12 @@ Returns embedded SQL::Abstract::More object.
 
 Please anticipate API changes in this early state of development.
 
+We don't recommend to use Nitesi::Query::DBI with file backed DBI
+drivers like L<DBD::DBM>, L<DBD::CSV>, L<DBD::AnyData> or L<DBD::Excel>.
+In case you want to do this, please install L<SQL::Statement> first,
+as the statements produced by this module are not understood by
+L<DBI::SQL::Nano>.
+
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>

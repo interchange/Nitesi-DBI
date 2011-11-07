@@ -12,9 +12,12 @@ WriteMakefile(
       ? ('LICENSE'=> 'perl')
       : ()),
     PL_FILES            => {},
-    PREREQ_PM => {
+    BUILD_REQUIRES => {
         'Test::More' => 0,
 	'Test::Database' => 0,
+	'SQL::Statement' => 0,
+    },
+    PREREQ_PM => {
 	'SQL::Abstract' => 0,
 	'SQL::Abstract::More' => 0,
         'Nitesi' => 0.0020,
