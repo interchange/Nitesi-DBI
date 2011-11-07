@@ -10,11 +10,11 @@ Nitesi::DBI - DBI bundle for Nitesi shop machine
 
 =head1 VERSION
 
-Version 0.0031
+Version 0.0032
 
 =cut
 
-our $VERSION = '0.0031';
+our $VERSION = '0.0032';
 
 =head1 DESCRIPTION
 
