@@ -37,6 +37,10 @@ database and put into account data return by login method.
 
 =back
 
+=item inactive
+
+Name of field which determines whether user is disabled.
+
 =cut
 
 sub init {
@@ -76,38 +80,50 @@ List of permissions for this user.
 
 sub login {
     my ($self, %args) = @_;
-    my ($results, $ret, $roles_map, @permissions, @fields, $acct);
+    my ($results, $ret, $roles_map, @permissions, %conds, @fields, $acct);
 
     @fields = qw/uid username password/;
 
     if (defined $self->{fields}) {
 	push @fields, @{$self->{fields}};
     }
+    if (defined $self->{inactive}) {
+	push @fields, $self->{inactive};
+    }
+
+    $conds{email} = $args{username};
 
     $results = $self->{sql}->select(table => 'users', fields => join(',', @fields),
-				    where => {email => $args{username}});
+				    where => \%conds);
 
     $ret = $results->[0];
 
-    if ($ret && $self->{crypt}->check($ret->{password}, $args{password})) {
-	# retrieve permissions
-	$roles_map = $self->roles($ret->{uid}, map => 1);
-	@permissions = $self->permissions($ret->{uid}, [keys %$roles_map]);
-
-	$acct = {};
-
-	if (defined $self->{fields}) {
-	    for my $f (@{$self->{fields}}) {
-		$acct->{$f} = $ret->{$f};
-	    }
+    if ($ret) {
+	if (defined $self->{inactive} && $ret->{$self->{inactive}}) {
+	    # disabled user
+	    return 0;
 	}
 
-	$acct->{uid} = $ret->{uid};
-	$acct->{username} = $ret->{username};
-	$acct->{roles} = [values %$roles_map];
-	$acct->{permissions} = \@permissions;
+	if ($self->{crypt}->check($ret->{password}, $args{password})) {
+	    # retrieve permissions
+	    $roles_map = $self->roles($ret->{uid}, map => 1);
+	    @permissions = $self->permissions($ret->{uid}, [keys %$roles_map]);
 
-	return $acct;
+	    $acct = {};
+
+	    if (defined $self->{fields}) {
+		for my $f (@{$self->{fields}}) {
+		    $acct->{$f} = $ret->{$f};
+		}
+	    }
+
+	    $acct->{uid} = $ret->{uid};
+	    $acct->{username} = $ret->{username};
+	    $acct->{roles} = [values %$roles_map];
+	    $acct->{permissions} = \@permissions;
+	    
+	    return $acct;
+	}
     }
 
     return 0;
