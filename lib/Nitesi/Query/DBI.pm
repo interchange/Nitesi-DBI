@@ -239,6 +239,10 @@ sub _run {
     my ($self, $stmt, $bind_ref, %args) = @_;
     my ($sth, $row, @result, $ret);
 
+    if ($self->{log_queries}) {
+	$self->{log_queries}->('Query: ', $stmt, $bind_ref, \%args);
+    }
+
     unless ($sth = $self->{dbh}->prepare($stmt)) {
 	die "Failed to prepare $stmt: $DBI::errstr\n";
     }
