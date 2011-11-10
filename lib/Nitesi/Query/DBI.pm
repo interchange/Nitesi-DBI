@@ -280,7 +280,7 @@ sub _create_table {
     my ($self, $table, $fields) = @_;
     my ($stmt, @bind);
 
-    $stmt = $self->{sqla}->generate('create table', $table, $fields);
+    $stmt = $self->{sqla}->generate('create table', \$table, $fields);
 
     $self->_run($stmt, [], return_value => 'execute');
 }
@@ -289,7 +289,7 @@ sub _drop_table {
     my ($self, $table, $fields) = @_;
     my ($stmt, @bind);
 
-    $stmt = $self->{sqla}->generate('drop table', $table);
+    $stmt = $self->{sqla}->generate('drop table', \$table);
 
     $self->_run($stmt, [], return_value => 'execute');
 }

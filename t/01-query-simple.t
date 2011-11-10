@@ -20,9 +20,6 @@ else {
     plan skip_all => 'No test database handles available';
 }
 
-# NOTE:
-# for some odd reasons tables are create by SQL::Abstract in uppercase :-(
-
 # run tests
 for my $testdb (@handles) {
     diag 'Testing with DBI driver ' . $testdb->dbd();
@@ -36,10 +33,10 @@ for my $testdb (@handles) {
     $q->_create_table('products', ['sku varchar(32)', 'name varchar(255)']);
 
     # insert
-    $q->insert('PRODUCTS', {sku => '9780977920150', name => 'Modern Perl'});
+    $q->insert('products', {sku => '9780977920150', name => 'Modern Perl'});
 
     # select
-    $ret = $q->select_field(table => 'PRODUCTS', field => 'name', 
+    $ret = $q->select_field(table => 'products', field => 'name', 
 			    where => {sku => '9780977920150'});
 
     ok($ret eq 'Modern Perl', "Select field result: $ret");
