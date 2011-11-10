@@ -35,11 +35,11 @@ L<Account::Manager::Password> instance (required).
 List of fields (as array reference) to be retrieved from the
 database and put into account data return by login method.
 
-=back
-
 =item inactive
 
 Name of field which determines whether user is disabled.
+
+=back
 
 =cut
 
