@@ -88,8 +88,8 @@ sub select {
 	$extended{-limit} = $args{limit};
     }
 
-    if (keys %extended) {
-	# extended syntax for a join / limit
+    if (keys %extended || $fields[0] =~ /^-/) {
+	# extended syntax for a join / limit / distinct
 	$extended{-from} ||= $args{table};
 
 	if ($args{order}) {
