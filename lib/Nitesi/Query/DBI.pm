@@ -25,8 +25,51 @@ Nitesi::Query::DBI - DBI query engine for Nitesi
 
 =head1 DESCRIPTION
 
-This query engine is based on L<SQL::Abstract> and L<SQL::Abstract::More>.
+This query engine is based on L<SQL::Abstract> and L<SQL::Abstract::More> and
+supports the following query types:
 
+=over 4
+
+=item select
+
+Retrieving data from one or multiple tables.
+
+=item insert
+
+Inserting data in one table.
+
+=item update
+
+Updating data in one table.
+
+=item delete
+
+Deleting data from one table.
+
+=back
+
+=head2 SELECT QUERIES
+
+=head3 Distinct example
+
+    @skus = $query->select_list_field(table => 'navigation_products',
+                   field => 'sku',
+                   distinct => 1,
+                   where => {navigation => 1});
+
+=head3 Order and limit example
+
+    $products = $query->select(table => 'products', 
+                   fields => [qw/sku title price description media_type/],
+		   where => {inactive => 0}, 
+                   order => 'entered DESC', 
+                   limit => 10);
+
+=head3 Join example
+
+    $roles = $query->select(join => [qw/user_roles rid=rid roles/],
+                            fields => [qw/roles.rid roles.name/],
+		            where => {uid => 1});
 =cut
 
 use base 'Nitesi::Object';
