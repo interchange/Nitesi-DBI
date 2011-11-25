@@ -96,6 +96,11 @@ sub select {
 	    $extended{-order_by} = $args{order};
 	}
 
+	unless (exists $args{where}) {
+	    # SQL::Abstract::More chokes on undefined where
+	    $args{where} = {};
+	}
+
 	@sql_params = (-columns => \@fields,
 		       -where => $args{where},
 		       %extended,
