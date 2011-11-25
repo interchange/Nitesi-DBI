@@ -78,6 +78,10 @@ sub select {
 	@fields = ('*');
     }
     
+    if ($args{distinct}) {
+	@fields = ('-distinct' => @fields);
+    }
+
     if ($args{join}) {
 	my @join = ref($args{join}) eq 'ARRAY' ? @{$args{join}} : split /\s+/, $args{join};
 
