@@ -1,5 +1,27 @@
 Revision history for Nitesi::DBI
 
+0.0040 Sun Nov 27 12:14:54 2011 CET
+
+    [ENHANCEMENTS]
+
+    * Add support for distinct in select queries to query engine.
+    * Add inactive setting for disabled users to account provider.
+    * Add log_queries attribute to Nitesi::Query::DBI class.
+
+    [BUG FIXES]
+
+    * Fix crash with select queries passed to SQL::Abstract::More without where parameter.
+    * Fix create and drop table statement
+
+    [TESTS]
+
+    * Add tests for select distinct queries.
+
+    [DOCUMENTATION]
+
+    * Add supported query types and examples for select queries with order, limit,
+      distinct and join to Nitesi::Query::DBI's POD.
+
 0.0032 Mon Nov  7 08:49:29 2011 CET
 
     [BUG FIXES]
