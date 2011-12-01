@@ -91,7 +91,7 @@ sub login {
 	push @fields, $self->{inactive};
     }
 
-    $conds{email} = $args{username};
+    $conds{username} = $args{username};
 
     $results = $self->{sql}->select(table => 'users', fields => join(',', @fields),
 				    where => \%conds);
