@@ -1,6 +1,7 @@
 Changes
 ignore.txt
 lib/Nitesi/Account/Provider/DBI.pm
+lib/Nitesi/Database/Schema.pod
 lib/Nitesi/DBI.pm
 lib/Nitesi/Query/DBI.pm
 Makefile.PL
