@@ -328,6 +328,19 @@ sub _run {
 }
 
 # private methods for testing, likely to promoted to public methods in the future
+sub _tables {
+    my ($self) = @_;
+    my (@tables);
+
+    @tables = $self->dbh->tables;
+
+    if ($self->dbh->{Driver}->{Name} eq 'mysql') {
+	@tables = map {s/^`(.*)`\.`(.*)`$/$2/; $_} @tables;
+    }
+
+    return @tables;
+}
+
 sub _create_table {
     my ($self, $table, $fields) = @_;
     my ($stmt, @bind);
