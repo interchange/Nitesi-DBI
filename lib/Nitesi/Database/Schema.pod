@@ -21,6 +21,7 @@ Products are stored in the C<products> table.
       name varchar(255) NOT NULL DEFAULT '',
       description text NOT NULL DEFAULT '',
       price decimal(10,2) NOT NULL DEFAULT 0,
+      weight integer NOT NULL DEFAULT 0,
       priority integer NOT NULL DEFAULT 0,
       inactive boolean NOT NULL DEFAULT FALSE
     );
@@ -42,6 +43,10 @@ Product description.
 =item price
 
 Product price.
+
+=item weight
+
+Product weight in grams.
 
 =item priority
 
