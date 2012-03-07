@@ -288,6 +288,70 @@ Permission, e.g. C<view_cart>, C<add_user>.
 
 =cut
 
+=head2 ADRESSSES
+
+=head3 addresses
+
+    CREATE TABLE addresses (
+      aid serial NOT NULL,
+      uid integer NOT NULL DEFAULT 0,
+      type varchar(16) NOT NULL DEFAULT '',
+      archived boolean NOT NULL DEFAULT FALSE,
+      first_name varchar(255) NOT NULL DEFAULT '',
+      last_name varchar(255) NOT NULL DEFAULT '',
+      street_address varchar(255) NOT NULL DEFAULT '',
+      zip varchar(255) NOT NULL DEFAULT '',
+      city varchar(255) NOT NULL DEFAULT '',
+      phone varchar(32) NOT NULL DEFAULT '',
+      state_code char(2) NOT NULL DEFAULT '',
+      country_code char(2) NOT NULL DEFAULT '',
+      CONSTRAINT transactions_pkey PRIMARY KEY (aid)
+    );
+
+=over 4
+
+=item uid
+
+Foreign key for user, 0 for anonymous users.
+
+=item type
+
+Address type, e.g. shipping or billing.
+
+=item archived
+
+Set for addresses used in the past.
+
+=item first_name
+
+First name of person attached to this address.
+
+=item last_name
+
+Last name of person attached to this address.
+
+=item street_address
+
+Street address, including house number.
+
+=item zip
+
+Zip code.
+
+=item city
+
+City.
+
+=item state_code
+
+State code.
+
+=item country_code
+
+Country code.
+
+=back
+
 =head2 TRANSACTIONS
 
 =head3 transactions
