@@ -288,7 +288,7 @@ Permission, e.g. C<view_cart>, C<add_user>.
 
 =cut
 
-=head2 ADRESSSES
+=head2 ADDRESSES
 
 =head3 addresses
 
