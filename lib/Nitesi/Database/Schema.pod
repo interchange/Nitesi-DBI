@@ -60,6 +60,38 @@ category listings.
 
 =back
 
+=head3 product_attributes table
+
+    CREATE TABLE product_attributes (
+      code serial NOT NULL PRIMARY KEY,
+      sku varchar(32) NOT NULL,
+      name varchar(32) NOT NULL,
+      value text NOT NULL default '',
+      original_sku varchar(32) NOT NULL default ''
+    ) CHARACTER SET utf8;
+
+    CREATE INDEX product_attributes_sku ON product_attributes (sku);
+
+=over 4
+
+=item sku
+
+Unique product identifier from C<products> table.
+
+=item name
+
+Name of the attribute, e.g. color.
+
+=item value
+
+Value of the attribute, e.g. red.
+
+=item original_sku
+
+Product identifier for the master attribute.
+
+=back
+
 =head2 NAVIGATION
 
 Menus and (product) categories are stored in the C<navigation> table.
