@@ -23,7 +23,7 @@ for (@handles) {
 
 if (@handles) {
     # determine number of tests
-    plan tests => 7 * @handles - 4 * $limited_handles;
+    plan tests => 9 * @handles - 4 * $limited_handles;
 }
 else {
     plan skip_all => 'No test database handles available';
@@ -61,6 +61,20 @@ for my $testdb (@handles) {
     # select all
     $ret = $q->select(table => 'products');
     ok(scalar(@$ret) == 1, "select all with $dbd driver");
+
+    # delete record (positional)
+    $q->delete('products', {sku => '9780977920150'});
+
+    $ret = $q->select(table => 'products');
+    ok(scalar(@$ret) == 0, "delete positional with $dbd driver");
+
+    # delete record (named)
+    $q->insert('products', {sku => '9780977920150', name => 'Modern Perl'});
+
+    $q->delete(table => 'products', where => {sku => '9780977920150'});
+
+    $ret = $q->select(table => 'products');
+    ok(scalar(@$ret) == 0, "delete named with $dbd driver");
 
     # drop table
     $q->_drop_table('products');
