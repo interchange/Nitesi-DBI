@@ -263,9 +263,11 @@ sub update {
 
 =head2 delete
 
-Runs delete query, e.g.:
+Runs delete query, either with positional or named parameters, e.g.:
 
     $query->delete('products', {inactive => 1});
+
+    $query->delete(table => 'products', where => {inactive => 1});
 
 =cut
 
