@@ -280,8 +280,7 @@ sub delete {
     else {
 	# named parameters
 	my %args = @_;
-
-	($stmt, @bind) = $self->{sqla}->delete(table => $args{table}, where => $args{where});
+	($stmt, @bind) = $self->{sqla}->delete($args{table}, $args{where});
     }
 
     $self->_run($stmt, \@bind, return_value => 'execute');
