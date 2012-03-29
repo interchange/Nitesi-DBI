@@ -133,7 +133,8 @@ or categorization (brand, star) for categories.
     CREATE TABLE navigation_products (
       sku varchar(32) NOT NULL,
       navigation integer NOT NULL,
-      type varchar(16) NOT NULL DEFAULT ''
+      type varchar(16) NOT NULL DEFAULT '',
+      key(sku,navigation)
     );
 
 =head2 CARTS
