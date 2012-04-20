@@ -107,6 +107,7 @@ Menus and (product) categories are stored in the C<navigation> table.
       description text NOT NULL DEFAULT '',
       parent integer NOT NULL DEFAULT 0,
       priority integer NOT NULL DEFAULT 0,
+      count integer NOT NULL DEFAULT 0,
       inactive boolean NOT NULL default FALSE,
       entered timestamp DEFAULT CURRENT_TIMESTAMP
     );
@@ -125,6 +126,11 @@ Navigation type, e.g. menu or category.
 
 Scope related to type, menu name for menus
 or categorization (brand, star) for categories.
+
+=item count
+
+Number of active products belonging to this navigation
+entry.
 
 =back
 
