@@ -8,22 +8,34 @@ use Nitesi::Query::DBI;
 # statements produced by SQL::Abstract are not understood by DBI::SQL::Nano
 use SQL::Statement;
 
-my (@handles, $dbh, $dbd, $q, $ret, @set, $limited_handles);
+my (@handles, $dbh, $dbd, $q, $ret, @set, %test_counts,
+    %test_exclusion_map, %limited_handles, $tests, @keys);
 
 @handles = Test::Database->handles();
 
-$limited_handles = 0;
+$tests = 0;
 
-for (@handles) {
-    if ($_->dbd eq 'DBM') {
-	# DBM cannot deal with multiple primary keys
-	$limited_handles++;
+%test_counts = ('multi_primary' => 4,
+                'serial' => 2,
+                'other' => 6);
+
+%test_exclusion_map = ('multi_primary' => {DBM => 1},
+                       'serial' => {CSV => 1, DBM => 1, SQLite => 1},
+    );
+
+for my $testdb (@handles) {
+    $tests += $test_counts{other};
+
+    for my $test_type (keys %test_exclusion_map) {
+        unless ($test_exclusion_map{$test_type}->{$testdb->dbd}) {
+            $tests += $test_counts{$test_type};
+        }
     }
 }
 
 if (@handles) {
     # determine number of tests
-    plan tests => 9 * @handles - 4 * $limited_handles;
+    plan tests => $tests;
 }
 else {
     plan skip_all => 'No test database handles available';
@@ -40,17 +52,26 @@ for my $testdb (@handles) {
 
     isa_ok($q, 'Nitesi::Query::DBI');
 
-    for my $t ('products', 'navigation_products') {
-	if (grep {$_ eq $t} $q->_tables) {
-	    $q->_drop_table($t);
-	}
+    for my $t ('products', 'navigation', 'navigation_products') {
+        if (grep {$_ eq $t} $q->_tables) {
+            $q->_drop_table($t);
+        }
     }
     
     # create table
-    $q->_create_table('products', ['sku varchar(32)', 'name varchar(255)']);
+    $q->_create_table('products', ['sku varchar(32) primary key', 'name varchar(255)']);
 
     # insert
-    $q->insert('products', {sku => '9780977920150', name => 'Modern Perl'});
+    $ret = $q->insert('products', {sku => '9780977920150', name => 'Modern Perl'});
+
+    # distinguish between drivers support primary_key method properly
+    @keys = $dbh->primary_key(undef, undef, 'products');
+    if (@keys == 1) {
+        ok(defined $ret && $ret eq '9780977920150', "return value of insert with $dbd driver");
+    }
+    else {
+        ok($ret, "return value of insert with $dbd driver");
+    }
 
     # select field
     $ret = $q->select_field(table => 'products', field => 'name', 
@@ -79,33 +100,48 @@ for my $testdb (@handles) {
     # drop table
     $q->_drop_table('products');
 
-    next if $testdb->dbd() eq 'DBM';
+    unless ($test_exclusion_map{multi_primary}->{$dbd}) {
+        # create table without primary key for testing distinct 
+        $q->_create_table('navigation_products', ['sku varchar(32) NOT NULL', 
+                                                  'navigation integer NOT NULL']);
 
-    # create table without primary key for testing distinct 
-    $q->_create_table('navigation_products', ['sku varchar(32) NOT NULL', 
-					      'navigation integer NOT NULL']);
+        # insert records
+        $q->insert('navigation_products', {sku => '9780977920150', navigation => 1});
+        $q->insert('navigation_products', {sku => '9780977920150', navigation => 2});
 
-    # insert records
-    $q->insert('navigation_products', {sku => '9780977920150', navigation => 1});
-    $q->insert('navigation_products', {sku => '9780977920150', navigation => 2});
+        # normal select
+        @set = $q->select_list_field(table => 'navigation_products', field => 'navigation');
+        ok(scalar(@set) == 2, "select list field from navigation_products with $dbd driver");
 
-    # normal select
-    @set = $q->select_list_field(table => 'navigation_products', field => 'navigation');
-    ok(scalar(@set) == 2, "select list field from navigation_products with $dbd driver");
+        # distinct select (SQL::Abstract::More syntax)
+        $ret = $q->select(table => 'navigation_products', fields => [-distinct => 'sku']);
+        ok(scalar(@$ret) == 1, "select distinct from navigation_products with $dbd driver and original syntax");
 
-    # distinct select (SQL::Abstract::More syntax)
-    $ret = $q->select(table => 'navigation_products', fields => [-distinct => 'sku']);
-    ok(scalar(@$ret) == 1, "select distinct from navigation_products with $dbd driver and original syntax");
+        # distinct select (Nitesi::Query::DBI syntax)
+        $ret = $q->select(table => 'navigation_products', fields => 'sku', distinct => 1);
+        ok(scalar(@$ret) == 1, "select distinct from navigation_products with $dbd driver and our syntax");
 
-    # distinct select (Nitesi::Query::DBI syntax)
-    $ret = $q->select(table => 'navigation_products', fields => 'sku', distinct => 1);
-    ok(scalar(@$ret) == 1, "select distinct from navigation_products with $dbd driver and our syntax");
+        # distinct select list field
+        @set = $q->select_list_field(table => 'navigation_products', field => 'sku', distinct => 1);
+        ok(scalar(@set) == 1, "select distinct list field from navigation_products with $dbd driver")
+            || diag scalar(@set) . " results instead on one";
 
-    # distinct select list field
-    @set = $q->select_list_field(table => 'navigation_products', field => 'sku', distinct => 1);
-    ok(scalar(@set) == 1, "select distinct list field from navigation_products with $dbd driver")
-	|| diag scalar(@set) . " results instead on one";
+        $q->_drop_table('navigation_products');
+    }
+    
+    unless ($test_exclusion_map{serial}->{$dbd}) {
+        # create table with serial field
+        $q->_create_table('navigation', ['code serial NOT NULL primary key',
+                                         q{uri varchar(255) NOT NULL DEFAULT ''}]);
 
-    $q->_drop_table('navigation_products');
+        $ret = $q->insert('navigation', {uri => 'help'});
+        ok($ret == 1, "first insert into table with serial with $dbd driver");
+        
+        $ret = $q->insert('navigation', {uri => 'about'});
+        ok($ret == 2, "second insert into table with serial with $dbd driver")
+            || diag "Return value for second insert: $ret.";
+        
+        $q->_drop_table('navigation');
+    }
 }
 
