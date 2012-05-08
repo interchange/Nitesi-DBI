@@ -222,11 +222,36 @@ Runs insert query, e.g.:
 
 sub insert {
     my ($self, @args) = @_;
-    my ($stmt, @bind);
+    my ($stmt, @bind, $ret, @keys);
 
     ($stmt, @bind) = $self->{sqla}->insert(@args);
 
-    $self->_run($stmt, \@bind, return_value => 'execute');
+    $ret = $self->_run($stmt, \@bind, return_value => 'execute');
+
+    # determine primary keys
+    @keys = $self->{dbh}->primary_key(undef, undef, $args[0]);
+    
+    if (@keys == 1) {
+        if (exists $args[1]->{$keys[0]} && defined $args[1]->{$keys[0]}) {
+            return $args[1]->{$keys[0]};
+        }
+        elsif ($self->{dbh}->{Driver}->{Name} eq 'mysql') {
+            return $self->{dbh}->last_insert_id(undef, undef, $args[0], undef);
+        }
+        elsif ($self->{dbh}->{Driver}->{Name} eq 'Pg') {
+            my ($seq_stmt, $seq_name, $seq_val, $sth);
+            
+            # determine whether primary key uses an sequence
+            $seq_stmt = q{select pg_get_serial_sequence(?, ?)};
+
+            if ($seq_name = $self->_run($seq_stmt, [$args[0], $keys[0]], return_value => 'value_first')) {
+                $seq_val = $self->_run('select currval(?)', [$seq_name], return_value => 'value_first');
+                return $seq_val;
+            }
+        }
+    }
+
+    return $ret;
 }
 
 =head2 update
