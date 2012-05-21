@@ -129,6 +129,26 @@ sub login {
     return 0;
 }
 
+=head2 create
+
+Creates an account.
+
+=cut
+    
+sub create {
+    my ($self, %args) = @_;
+    my ($values, $password, $uid);
+
+    $values = {%args};
+
+    $password = delete $values->{password};
+
+    $args{created} ||= \['now()'];
+        
+    $uid = $self->{sql}->insert('users', {%args});
+    return $uid;
+}
+
 =head2 roles
 
 Returns list of roles for supplied user identifier.
