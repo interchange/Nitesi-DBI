@@ -149,6 +149,22 @@ sub create {
     return $uid;
 }
 
+=head2 delete
+
+Deletes an account.
+
+=cut
+
+sub delete {
+    my ($self, $uid) = @_;
+    my ($ret);
+    
+    $ret = $self->{sql}->delete(table => 'users',
+                                where => {uid => $uid});
+
+    return $ret;
+}
+
 =head2 roles
 
 Returns list of roles for supplied user identifier.
