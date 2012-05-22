@@ -278,6 +278,26 @@ sub exists {
     return $results;
 }
 
+=head2 load
+
+Loads user with uid.
+
+=cut
+
+sub load {
+    my ($self, $uid) = @_;
+    my ($results);
+
+    $results = $self->{sql}->select(table => 'users',
+                                    where => {uid => $uid});
+
+    if (@$results == 1) {
+        return $results->[0];
+    }
+
+    return;
+}
+
 =head1 AUTHOR
 
 Stefan Hornburg (Racke), <racke@linuxia.de>
