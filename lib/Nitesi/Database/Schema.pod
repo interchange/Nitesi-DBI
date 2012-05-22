@@ -97,6 +97,30 @@ Product identifier for the master attribute.
 
 =back
 
+=head3 inventory table
+
+    CREATE TABLE inventory (
+       sku varchar(32) NOT NULL PRIMARY KEY,
+       quantity integer NOT NULL DEFAULT 0,
+       in_stock boolean,
+    );
+
+=over 4
+
+=item sku
+
+Unique product identifier from C<products> table.
+
+=item quantity
+
+Available quantity.
+
+=item in_stock
+
+Whether to show item as in_stock or not. 
+
+=back
+
 =head2 NAVIGATION
 
 Menus and (product) categories are stored in the C<navigation> table.
