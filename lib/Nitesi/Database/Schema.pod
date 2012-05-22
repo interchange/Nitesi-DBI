@@ -19,6 +19,7 @@ Products are stored in the C<products> table.
     CREATE TABLE products (
       sku varchar(32) NOT NULL PRIMARY KEY,
       name varchar(255) NOT NULL DEFAULT '',
+      short_description varchar(500) NOT NULL DEFAULT '',
       description text NOT NULL DEFAULT '',
       price decimal(10,2) NOT NULL DEFAULT 0,
       weight integer NOT NULL DEFAULT 0,
@@ -36,9 +37,13 @@ Unique product identifier
 
 Product name.
 
+=item short_description
+
+Short description of the product.
+
 =item description
 
-Product description.
+Full description of the product.
 
 =item price
 
