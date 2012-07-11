@@ -1,5 +1,30 @@
 Revision history for Nitesi::DBI
 
+0.0050 Wed Jul 11 14:10:27 2012 CEST
+
+    [ENHANCEMENTS]
+
+    * Let insert method try to return value of primary key. 
+      With mysql and Pg drivers that will work even with serial fields.
+    * Add load, create, delete and become method to account provider class.
+
+    [BUG FIXES]
+
+    * Fix bug in Nitesi::Query::DBI's delete method when called with named
+      parameters.
+
+    [TESTS]
+
+    * Add tests for Nitesi::Query::DBI's delete method.
+    * Remove existing tables from test database at the beginning of
+      the test cycle.
+
+    [DOCUMENTATION]
+
+    * Add draft documentation on Nitesi's default database schema.
+    * Add example for calling Nitesi::Query::DBI's delete method with named
+      parameters. 
+
 0.0040 Sun Nov 27 12:14:54 2011 CET
 
     [ENHANCEMENTS]
