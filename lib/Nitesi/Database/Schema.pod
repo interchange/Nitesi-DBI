@@ -128,7 +128,7 @@ Menus and (product) categories are stored in the C<navigation> table.
 =head3 navigation table
 
     CREATE TABLE navigation (
-      code serial NOT NULL PRIMARY KEY,
+      code serial NOT NULL,
       uri varchar(255) NOT NULL DEFAULT '',
       type varchar(32) NOT NULL DEFAULT '',
       scope varchar(32) NOT NULL DEFAULT '',
@@ -138,7 +138,9 @@ Menus and (product) categories are stored in the C<navigation> table.
       priority integer NOT NULL DEFAULT 0,
       count integer NOT NULL DEFAULT 0,
       inactive boolean NOT NULL default FALSE,
-      entered timestamp DEFAULT CURRENT_TIMESTAMP
+      entered timestamp DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY(code),
+      UNIQUE(uri)
     );
 
 =over 4
@@ -170,6 +172,93 @@ entry.
       navigation integer NOT NULL,
       type varchar(16) NOT NULL DEFAULT '',
       key(sku,navigation)
+    );
+
+=head2 MEDIA
+
+Media are stored in the C<media> table.
+
+=head3 C<media> table
+
+   create table media (
+      code serial NOT NULL,
+      file varchar(255) NOT NULL DEFAULT '',
+      uri varchar(255) NOT NULL DEFAULT '',
+      mime_type varchar(255) NOT NULL DEFAULT '',
+      label varchar(255) NOT NULL DEFAULT '',
+      author integer NOT NULL DEFAULT 0,
+      created datetime NOT NULL,
+      modified datetime NOT NULL,
+      inactive boolean NOT NULL DEFAULT FALSE,
+      primary key(code)
+--      unique(file),
+--      unique(uri)
+   );
+
+=head3 C<media_types> table
+
+   create table media_types (
+      code serial NOT NULL,
+      type varchar(32) NOT NULL,
+      scope varchar(32) NOT NULL,
+      unique(type,scope)
+   );
+
+   insert into media_types (type,scope) values ('detail', 'store');
+   insert into media_types (type,scope) values ('thumb', 'store');
+   insert into media_types (type,scope) values ('cart', 'store');
+     
+=head3 C<media_products> table
+
+   create table media_products (
+      code serial NOT NULL,
+      media integer NOT NULL,
+      sku varchar(32) NOT NULL,
+      KEY (sku)
+   );
+
+=head3 C<media_display> table
+
+   create table media_display (
+      code serial NOT NULL,
+      media integer NOT NULL,
+      sku varchar(32) NOT NULL,
+      type integer NOT NULL,
+      KEY (sku)
+   );
+
+=head2 MERCHANDISING
+
+Merchandising tables.
+
+    CREATE TABLE merchandising_products (
+      code serial NOT NULL,
+      sku character varying(32) NOT NULL DEFAULT '',
+      sku_related character varying(32) NOT NULL DEFAULT '',
+      type character varying(32) NOT NULL DEFAULT '',
+      primary key(code)
+    );
+
+    CREATE TABLE merchandising_attributes (
+      code serial NOT NULL,
+      merchandising integer NOT NULL default 0,
+      name varchar(32) NOT NULL,
+      value text NOT NULL default '',
+      primary key(code)
+    );
+
+=head2 PRICING
+
+=head3 C<group_pricing> table
+
+    CREATE TABLE group_pricing (
+        code serial NOT NULL,
+        sku character varying(32) NOT NULL,
+        quantity integer NOT NULL DEFAULT 0,
+        rid integer NOT NULL DEFAULT 0,
+        price decimal(10,2) NOT NULL DEFAULT 0,
+        primary key(code),
+        key(sku)
     );
 
 =head2 CARTS
@@ -208,8 +297,12 @@ Carts are stored in the C<carts> and C<carts_products> table.
       username varchar(32) NOT NULL,
       email varchar(255) NOT NULL DEFAULT '',
       password varchar(255) NOT NULL DEFAULT '',
-      last_login integer NOT NULL DEFAULT 0,
-      created integer NOT NULL DEFAULT 0
+      first_name varchar(255) NOT NULL DEFAULT '',
+      last_name varchar(255) NOT NULL DEFAULT '',
+      last_login datetime NOT NULL,
+      created datetime NOT NULL,
+      modified datetime NOT NULL,
+      inactive boolean NOT NULL DEFAULT FALSE
     );
 
 =over 4
@@ -237,6 +330,31 @@ Time of last login
 =item created
 
 Time of account creation.
+
+=back
+
+=head3 user_attributes
+
+    CREATE TABLE user_attributes (
+      code serial NOT NULL,
+      uid integer NOT NULL,
+      name varchar(32) NOT NULL,
+      value text NOT NULL default '',
+      primary key(code),
+      key(uid)
+    );
+
+Attributes to be stored in user_attributes are:
+
+=over 4
+
+=item aid_shipping
+
+Default shipping address identifier.
+
+=item aid_billing
+
+Default billing address identifier.
 
 =back
 
@@ -272,7 +390,7 @@ Role label (for display only).
     CREATE TABLE user_roles (
       uid integer DEFAULT 0 NOT NULL,
       rid integer DEFAULT 0 NOT NULL,
-      CONSTRAINT user_roles_pkey PRIMARY KEY (uid, rid)
+      PRIMARY KEY (uid, rid)
     );
 
     CREATE INDEX idx_user_roles_rid ON user_roles (rid);
@@ -335,12 +453,15 @@ Permission, e.g. C<view_cart>, C<add_user>.
       archived boolean NOT NULL DEFAULT FALSE,
       first_name varchar(255) NOT NULL DEFAULT '',
       last_name varchar(255) NOT NULL DEFAULT '',
+      company varchar(255) NOT NULL DEFAULT '',
       street_address varchar(255) NOT NULL DEFAULT '',
       zip varchar(255) NOT NULL DEFAULT '',
       city varchar(255) NOT NULL DEFAULT '',
       phone varchar(32) NOT NULL DEFAULT '',
       state_code char(2) NOT NULL DEFAULT '',
       country_code char(2) NOT NULL DEFAULT '',
+      created datetime NOT NULL,
+      modified datetime NOT NULL,
       CONSTRAINT transactions_pkey PRIMARY KEY (aid)
     );
 
@@ -365,6 +486,10 @@ First name of person attached to this address.
 =item last_name
 
 Last name of person attached to this address.
+
+=item company
+
+Company name attached to this address.
 
 =item street_address
 
@@ -400,6 +525,7 @@ Country code.
       email varchar(255) NOT NULL DEFAULT '',
       aid_shipping integer NOT NULL DEFAULT 0,
       aid_billing integer NOT NULL DEFAULT 0,
+      weight integer NOT NULL DEFAULT 0,
       payment_method varchar(255) NOT NULL DEFAULT '',
       payment_code varchar(255) NOT NULL DEFAULT '',
       shipping_method varchar(255) NOT NULL DEFAULT '',
@@ -411,6 +537,23 @@ Country code.
       total_cost numeric(11,2) NOT NULL DEFAULT 0,
       status varchar(24) NOT NULL DEFAULT '',
       CONSTRAINT transactions_pkey PRIMARY KEY (code)
+    );
+
+=head3 orderline
+
+      salestax numeric(11,2) NOT NULL DEFAULT 0,
+
+=head3 payment_transactions
+
+    CREATE TABLE payment_transactions (
+      code serial NOT NULL PRIMARY KEY,
+      payment_mode varchar(32) NOT NULL default '',
+      payment_id varchar(32) NOT NULL default '',
+      session_id varchar(32) NOT NULL default '',
+      order_number varchar(24) NOT NULL default '',
+      status varchar(32) NOT NULL default '',
+      entered datetime default NULL,
+      updated datetime default NULL
     );
 
 =head2 SETTINGS
@@ -432,7 +575,19 @@ e.g. L<Dancer::Config>.
 
     CREATE INDEX settings_scope ON settings (scope);
 
-=head3 
+=head2 SESSIONS
+
+Sessions stored in the database (optional).
+
+=head3 sessions
+
+    CREATE TABLE sessions (
+      code varchar(255) not null primary key,
+      session_data text not null,
+      session_hash text not null,
+      created datetime not null,
+      modified timestamp not null DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
 
 =head2 OTHER
 
