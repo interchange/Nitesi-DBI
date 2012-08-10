@@ -453,10 +453,20 @@ sub _build_query {
         # map to current database schema
         while (($db, $mapped) = each %$field_ref) {
             if ($mapped) {
-                $attr{$db} = $args{$mapped};
+                if (exists $args{$mapped}) {
+                    $attr{$db} = $args{$mapped};
+                }
+                else {
+                    $attr{$db} = $self->$mapped;
+                }
             }
             elsif (defined $mapped) {
-                $attr{$db} = $args{$db};
+                if (exists $args{$db} && defined $args{$db}) {
+                    $attr{$db} = $args{$db};
+                }
+                else {
+                    $attr{$db} = $self->$db;
+                }
             }
         }
 
