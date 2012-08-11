@@ -610,6 +610,11 @@ sub _manage_assignments {
     $info_from = $object->api_info->{$object->base_role};
     $key_from = $info_from->{key};
 
+    # handle subclassed Nitesi roles
+    if (exists $info_from->{base}) {
+        $role_from = $info_from->{base};
+    }
+
     # determine assignment parameters
     unless (exists $info->{assign}->{$role_from}
             && ($assign_info = $info->{assign}->{$role_from})) {
