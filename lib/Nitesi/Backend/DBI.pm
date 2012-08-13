@@ -250,10 +250,14 @@ sub load {
     $set = $self->query->select(%$sql);
 
     if (@$set) {
-        if (@$set > 1) {
+        if (exists $info->{foreign}) {
             unless ($set = $self->_merge_query($set)) {
-                die "Multiple records returned.\n";
+                die "Failed to merge results.\n";
             }
+        }
+
+        if (@$set > 1) {
+            die "Multiple records returned.\n";
         }
 
         my ($name, $map, $record);
@@ -402,6 +406,9 @@ sub _merge_query {
             $result = [{%{$set->[0]}, %extra}];
             return $result;
         }
+
+        # foreign results not present
+        return $set;
     }
 
     return;
