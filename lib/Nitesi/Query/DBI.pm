@@ -108,6 +108,37 @@ Runs query and returns records as hash references inside a array reference.
         print "$_->{name} (SKU: $_->{sku}), only $_->{price}\n";
     }
 
+
+B<Example:> List first 10 - sku, name and price from table products where price is lower than 5, order them by name.
+
+    $query->select(table => 'products',
+                   fields => [qw/sku name price/],
+                   where => {price < 5},
+                   order => 'name',
+                   limit => 10);
+
+B<Example:> Join user_roles and roles by rid and show rid and name from roles table.
+
+    $query->select(join => 'user_roles rid=rid roles',
+			where => { uid => 1 },
+			fields => [qw/roles.rid roles.name],
+		);
+
+B<Example:> Where clause can be used as defined in L<SQL::Abstract> and L<SQL::Abstract::More>. In this example we find all roles whose name begins with "adm". -ilike is standard DB ILIKE ( minus sign is a sign for database operator and it's not related to negation of the query ).
+
+    $query->select(join => 'user_roles rid=rid roles',
+			where => { roles.name => {-ilike => 'adm%' },
+			fields => [qw/roles.rid roles.name],
+		);
+
+B<Example:> Where clause can be used as defined in L<SQL::Abstract> and L<SQL::Abstract::More>. In this example we find all roles whose name is either "admin" or "super".
+
+    $query->select(join => 'user_roles rid=rid roles',
+			where => { roles.name => {-in => ['admin', 'super' },
+			fields => [qw/roles.rid roles.name],
+		);
+
+
 =cut
 
 sub select {
@@ -172,7 +203,10 @@ sub select {
 
 Runs query and returns value for the first field (or undef).
 
-    $name = $query->select_field(table => 'products', 
+
+B<Example:> Get name of product 9780977920150.
+
+	$name = $query->select_field(table => 'products', 
                                  field => 'name', 
                                  where => {sku => '9780977920150'});
 
@@ -194,7 +228,9 @@ sub select_field {
 
 Runs query and returns a list of the first field for all matching records, e.g.:
 
-    @dvd_skus = $query->select_list_field(table => 'products',
+B<Example:> Get all sku's from products where media_type is 'DVD'.
+
+	@dvd_skus = $query->select_list_field(table => 'products',
                                     field => 'sku',
                                     where => {media_type => 'DVD'});
 
@@ -214,7 +250,9 @@ sub select_list_field {
 
 =head2 insert
 
-Runs insert query, e.g.:
+Runs insert query
+
+B<Example:>
 
     $query->insert('products', {sku => '9780977920150', name => 'Modern Perl'});
 
@@ -256,15 +294,18 @@ sub insert {
 
 =head2 update
 
-Runs update query, either with positional or name parameters, e.g.:
+Runs update query, either with positional or name parameters.
+Returns the number of matched/updated records.
+
+B<Example:> Positional parameters
 
     $updates = $query->update('products', {media_format => 'CD'}, {media_format => 'CDROM'});
+
+B<Example:> Named parameters - similar to using SQL to update the table.
 
     $updates = $query->update(table => 'products', 
                               set => {media_format => 'CD'}, 
                               where => {media_format => 'CDROM'});
-
-Returns the number of matched/updated records.
 
 =cut
 
@@ -288,9 +329,13 @@ sub update {
 
 =head2 delete
 
-Runs delete query, either with positional or named parameters, e.g.:
+Runs delete query, either with positional or named parameters.
+
+B<Example:> Positional parameters
 
     $query->delete('products', {inactive => 1});
+
+B<Example:> Named parameters - similar to using SQL to delete the record.
 
     $query->delete(table => 'products', where => {inactive => 1});
 
