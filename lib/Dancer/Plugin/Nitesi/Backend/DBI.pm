@@ -3,9 +3,16 @@ package Dancer::Plugin::Nitesi::Backend::DBI;
 use Moo;
 use Dancer::Plugin::Database;
 
-=head1 NAME 
+=head1 NAME
 
-Dancer::Plugin::Nitesi::Backend::DBI
+Dancer::Plugin::Nitesi::Backend::DBI - Dancer DBI backend for Nitesi Shop Machine
+
+=head1 ATTRIBUTES
+
+=head2 dbh
+
+DBI database handle, which is usually retrieved through
+L<Dancer::Plugin::Database>.
 
 =cut
 
@@ -15,6 +22,14 @@ has dbh => (
     default => sub {database},
     );
 
+=head1 METHODS
+
+=head2 params
+
+Returns backend parameters.
+
+=cut
+
 sub params {
     my $self = shift;
     my %params;
@@ -22,5 +37,21 @@ sub params {
     $params{dbh} = $self->dbh;
     return \%params;
 }
+
+=head1 AUTHOR
+
+Stefan Hornburg (Racke), C<racke@linuxia.de>
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright 2012 Stefan Hornburg (Racke).
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See http://dev.perl.org/licenses/ for more information.
+
+=cut
 
 1;
