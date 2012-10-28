@@ -2,6 +2,26 @@ package Nitesi::Backend::DBI;
 
 use Moo::Role;
 
+=head1 NAME
+
+Nitesi::Backend::DBI - DBI backend for Nitesi Shop Machine
+
+=head1 ATTRIBUTES
+
+=head2 dbh
+
+DBI database handle.
+
+=head2 log_queries
+
+Subroutine to log database queries.
+
+=head2 query
+
+L<Nitesi::Query::DBI> object.
+
+=cut
+
 with 'Nitesi::Provider::Role';
 
 has dbh => (
@@ -26,6 +46,14 @@ has query => (
         Nitesi::Query::DBI->new(%args);
     },
 );
+
+=head1 METHODS
+
+=head2 attributes
+
+Provides attributes for current object.
+
+=cut
 
 sub attributes {
     my $self = shift;
@@ -182,6 +210,12 @@ sub update {
     return $self;
 }
 
+=head2 delete
+
+Delete a record.
+
+=cut
+
 sub delete {
     my $self = shift;
     my ($code, $info, $key);
@@ -210,6 +244,12 @@ sub delete {
     return $ret;
 }
 
+=head2 search
+
+Searches records.
+
+=cut
+
 sub search {
     my ($self, %args) = @_;
     my ($info, $field_ref, $virt_ref, $set, $name, $map, $sql);
@@ -233,6 +273,12 @@ sub search {
 
     return $set;
 }
+
+=head2 load
+
+Loads a record
+
+=cut
 
 sub load {
     my ($self) = shift;
@@ -279,6 +325,12 @@ sub load {
     return;
 }
 
+=head2 save
+
+Saves a record.
+
+=cut
+
 sub save {
     my ($self) = @_;
     my (%data);
@@ -301,6 +353,12 @@ sub save {
     # save product to database
     $self->query->insert($self->api_name, \%data);
 }
+
+=head2 dump
+
+Dumps a record.
+
+=cut
 
 sub dump {
     my $self = shift;
@@ -582,9 +640,20 @@ sub _build_query {
 sub _map_reverse {
 }
 
-# dummy method for now
+=head2 navigation
+
+Dummy method, will removed later.
+
+=cut
+
 sub navigation {
 }
+
+=head2 assign
+
+Assigns object to the current one.
+
+=cut
 
 sub assign {
     my ($self, $object) = @_;
@@ -592,11 +661,23 @@ sub assign {
     return $self->_manage_assignments($object, 'create');
 }
 
+=head2 unassign
+
+Unassigns object from the current one.
+
+=cut
+
 sub unassign {
     my ($self, $object) = @_;
 
     return $self->_manage_assignments($object, 'delete');
 }
+
+=head2 assigned
+
+Returns list of assigned objects.
+
+=cut
 
 sub assigned {
     my ($self, $object) = @_;
