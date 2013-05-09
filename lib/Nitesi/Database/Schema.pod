@@ -294,7 +294,7 @@ Carts are stored in the C<carts> and C<carts_products> table.
 
     CREATE TABLE users (
       uid serial primary key,
-      username varchar(32) NOT NULL,
+      username varchar(255) NOT NULL,
       email varchar(255) NOT NULL DEFAULT '',
       password varchar(255) NOT NULL DEFAULT '',
       first_name varchar(255) NOT NULL DEFAULT '',
