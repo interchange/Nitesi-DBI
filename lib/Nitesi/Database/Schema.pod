@@ -539,22 +539,168 @@ Country code.
       CONSTRAINT transactions_pkey PRIMARY KEY (code)
     );
 
+=over 4
+
+=item shipping_method
+
+Shipping method for the order.
+
+=item shipping_code
+
+Shipping ID assigned by shipping company.
+
+=item subtotal
+
+Subtotal of the order (sum of product prices).
+
+=item shipping
+
+Shipping cost of the order.
+
+=item handling
+
+Other fees applied to the order.
+
+=item salestax
+
+Salestax for the order.
+
+=item total_cost
+
+Total amount of the order.
+
+=item status
+
+Status of the order.
+
+=back
+
 =head3 orderline
 
+    create table orderline (
+      code serial not null,
+      order_number varchar(24) NOT NULL DEFAULT '',
+      position integer NOT NULL DEFAULT 0,
+      sku varchar(32) NOT NULL PRIMARY KEY,
+      name varchar(255) NOT NULL DEFAULT '',
+      short_description varchar(500) NOT NULL DEFAULT '',
+      description text NOT NULL DEFAULT '',
+      weight integer NOT NULL DEFAULT 0,
+      quantity integer,
+      quantity_shipped integer,
+      shipping_method varchar(255) NOT NULL DEFAULT '',
+      shipping_code varchar(255) NOT NULL DEFAULT '',
+      price numeric(10,2) NOT NULL DEFAULT 0,
+      subtotal numeric(11,2) NOT NULL DEFAULT 0,
+      shipping numeric(11,2) NOT NULL DEFAULT 0,
+      handling numeric(11,2) NOT NULL DEFAULT 0,
       salestax numeric(11,2) NOT NULL DEFAULT 0,
+      status varchar(24) NOT NULL DEFAULT ''
+    );
+
+The fields sku, name, short_description, description, price
+and weight are the values for the product at the time of
+order.
+
+=over 4
+
+=item order_number
+
+Reference to order number in C<transactions>.
+
+=item position
+
+Position of ordered item (1, ...).
+
+=item quantity
+
+Quantity of ordered item.
+
+=item quantity_shipped
+
+Shipped quantity of ordered item.
+
+=item shipping_method
+
+Shipping method for the ordered item.
+
+=item shipping_code
+
+Shipping ID assigned by shipping company.
+
+=item subtotal
+
+Subtotal of the ordered item (sum of product price).
+
+=item shipping
+
+Shipping cost of the ordered item.
+
+=item handling
+
+Other fees applied to the ordered item.
+
+=item salestax
+
+Salestax for the ordered item.
+
+=item status
+
+Status of the ordered item.
+
+=back
 
 =head3 payment_transactions
 
     CREATE TABLE payment_transactions (
       code serial NOT NULL PRIMARY KEY,
       payment_mode varchar(32) NOT NULL default '',
+      payment_action varchar(32) NOT NULL default '',
       payment_id varchar(32) NOT NULL default '',
-      session_id varchar(32) NOT NULL default '',
+      auth_code varchar(255) NOT NULL default '',
+      session_id varchar(255) NOT NULL default '',
       order_number varchar(24) NOT NULL default '',
+      amount numeric(11,2) NOT NULL DEFAULT 0,
       status varchar(32) NOT NULL default '',
-      entered datetime default NULL,
-      updated datetime default NULL
+      payment_session_id varchar(255) NOT NULL default '',
+      payment_error_code varchar(32) NOT NULL default '',
+      payment_error_message text NOT NULL default '',
+      created datetime default NULL,
+      last_modified datetime default NULL
     );
+
+=over 4
+
+=item payment_mode
+
+Payment gateway.
+
+=item payment_id
+
+Payment id retrieved from payment server.
+
+=item auth_code
+
+Authentication code retrieved from payment server.
+
+=item session_id
+
+Session id used in the shop.
+
+=item order_number
+
+Order number from L<transactions> table.
+
+=item amount
+
+Amount passed to payment server.
+
+=item payment_session_id
+
+Session id retrieved from payment server, e.g. for
+IPayment gateway.
+
+=back
 
 =head2 SETTINGS
 
