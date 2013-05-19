@@ -22,6 +22,7 @@ Products are stored in the C<products> table.
       short_description varchar(500) NOT NULL DEFAULT '',
       description text NOT NULL DEFAULT '',
       price decimal(10,2) NOT NULL DEFAULT 0,
+      uri varchar(255) NOT NULL DEFAULT '',
       weight integer NOT NULL DEFAULT 0,
       priority integer NOT NULL DEFAULT 0,
       canonical_sku varchar(32) NOT NULL DEFAULT '',
@@ -49,6 +50,10 @@ Full description of the product.
 =item price
 
 Product price.
+
+=item uri
+
+Link to product.
 
 =item weight
 
