@@ -363,7 +363,7 @@ sub _run {
     my ($sth, $row, @result, $ret);
 
     if ($self->{log_queries}) {
-	$self->{log_queries}->('Query: ', $stmt, $bind_ref, \%args);
+        $self->{log_queries}->($stmt, $bind_ref, \%args);
     }
 
     unless ($sth = $self->{dbh}->prepare($stmt)) {
