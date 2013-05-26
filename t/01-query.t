@@ -53,7 +53,7 @@ for my $testdb (@handles) {
     isa_ok($q, 'Nitesi::Query::DBI');
 
     for my $t ('products', 'navigation', 'navigation_products') {
-        if (grep {$_ eq $t} $q->_tables) {
+        if (grep {$_ =~ /^(.*?\.)?$t/} $q->_tables) {
             $q->_drop_table($t);
         }
     }
