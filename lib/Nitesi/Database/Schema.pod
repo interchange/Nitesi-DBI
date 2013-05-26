@@ -539,6 +539,7 @@ Country code.
       weight integer NOT NULL DEFAULT 0,
       payment_method varchar(255) NOT NULL DEFAULT '',
       payment_code varchar(255) NOT NULL DEFAULT '',
+      payment_status varchar(255) NOT NULL DEFAULT '',
       shipping_method varchar(255) NOT NULL DEFAULT '',
       shipping_code varchar(255) NOT NULL DEFAULT '',
       subtotal numeric(11,2) NOT NULL DEFAULT 0,
@@ -551,6 +552,30 @@ Country code.
     );
 
 =over 4
+
+=item payment_status
+
+Possible values are:
+
+=over 4
+
+=item pending
+
+Payment is pending.
+
+=item success
+
+Payment has been successful.
+
+=item failure
+
+Payment has been failed.
+
+=item canceled
+
+Payment has been canceled.
+
+=back
 
 =item shipping_method
 
