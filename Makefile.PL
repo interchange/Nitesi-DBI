@@ -24,4 +24,9 @@ WriteMakefile(
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Nitesi-DBI-*' },
+    META_MERGE        => {
+        resources => {
+            repository  => 'https://github.com/racke/Nitesi-DBI',
+        },
+    },
 );
