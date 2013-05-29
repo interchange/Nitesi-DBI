@@ -25,7 +25,9 @@ Products are stored in the C<products> table.
       uri varchar(255) NOT NULL DEFAULT '',
       weight integer NOT NULL DEFAULT 0,
       priority integer NOT NULL DEFAULT 0,
+      gtin varchar(32) NOT NULL DEFAULT '',
       canonical_sku varchar(32) NOT NULL DEFAULT '',
+      status varchar(32) NOT NULL DEFAULT '',
       inactive boolean NOT NULL DEFAULT FALSE
     );
 
@@ -64,10 +66,41 @@ Product weight in grams.
 The product priority is used for sorting products on
 search results and category listings.
 
+=item gtin
+
+Global trade item number (GTIN). ISBN, EAN and UPC
+numbers can be expressed as GTIN, see
+L<http://en.wikipedia.org/wiki/Global_Trade_Item_Number>.
+
 =item canonical_sku
 
 The canonical SKU is used for product variants, e.g.
 different size and color.
+
+=item status
+
+The product status. Possible values are:
+
+=over 4
+
+=item available
+
+Product can be delivered immediately.
+
+=item short wait
+
+Product can be delivered in a few days.
+
+=item long wait
+
+Product can be delivered, but it takes
+longer than a few days.
+
+=item not available
+
+Product is sold out or discontinued.
+
+=back
 
 =item inactive
 
