@@ -22,6 +22,16 @@ has dbh => (
     default => sub {database},
     );
 
+=head2 log_queries
+
+Refererence to subroutine for logging database queries.
+
+=cut
+
+has log_queries => (
+    is => 'rw',
+);
+
 =head1 METHODS
 
 =head2 params
@@ -35,6 +45,8 @@ sub params {
     my %params;
 
     $params{dbh} = $self->dbh;
+    $params{log_queries} = $self->log_queries;
+
     return \%params;
 }
 
