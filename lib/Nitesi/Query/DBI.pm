@@ -166,6 +166,10 @@ sub select {
 	$extended{-limit} = $args{limit};
     }
 
+    if ($args{offset}) {
+        $extended{-offset} = $args{offset};
+    }
+
     if (keys %extended || $fields[0] =~ /^-/) {
 	# extended syntax for a join / limit / distinct
 	$extended{-from} ||= $args{table};
