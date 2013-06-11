@@ -2,7 +2,7 @@
 
 use Test::More;
 use Test::Database;
-
+use Data::Dumper;
 use Nitesi::Query::DBI;
 
 # statements produced by SQL::Abstract are not understood by DBI::SQL::Nano
@@ -16,10 +16,12 @@ my (@handles, $dbh, $dbd, $q, $ret, @set, %test_counts,
 $tests = 0;
 
 %test_counts = ('multi_primary' => 4,
+                'limit_offset' => 2,
                 'serial' => 2,
                 'other' => 6);
 
 %test_exclusion_map = ('multi_primary' => {DBM => 1},
+                       'limit_offset' => {CSV => 1, DBM => 1},
                        'serial' => {CSV => 1, DBM => 1, SQLite => 1},
     );
 
@@ -96,6 +98,29 @@ for my $testdb (@handles) {
 
     $ret = $q->select(table => 'products');
     ok(scalar(@$ret) == 0, "delete named with $dbd driver");
+
+    unless ($test_exclusion_map{limit_offset}->{$dbd}) {
+        # add records for limit tests
+        $q->insert('products', {sku => 'ABC', name => 'Foo'});
+        $q->insert('products', {sku => 'DEF', name => 'Bar'});
+        $q->insert('products', {sku => 'GHI', name => 'Baz'});
+        $q->insert('products', {sku => 'JKL', name => 'Zof'});
+        $q->insert('products', {sku => 'MNO', name => 'Fab'});
+
+        $ret = $q->select(table => 'products', fields => 'sku',
+                          limit => 2);
+
+        is_deeply($ret, [{sku => 'ABC'}, {sku => 'DEF'}],
+                  "select limit 2 with $dbd driver")
+            || diag "Output: ", Dumper($ret);
+
+        $ret = $q->select(table => 'products', fields => 'sku',
+                     limit => 2, offset => 1);
+
+        is_deeply($ret, [{sku => 'DEF'}, {sku => 'GHI'}],
+                  "select limit 2 offset 1 with $dbd driver")
+            || diag "Output: ", Dumper($ret);
+    }
 
     # drop table
     $q->_drop_table('products');
