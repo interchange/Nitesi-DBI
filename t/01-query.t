@@ -21,8 +21,8 @@ $tests = 0;
                 'other' => 6);
 
 %test_exclusion_map = ('multi_primary' => {DBM => 1},
-                       'limit_offset' => {CSV => 1, DBM => 1},
-                       'serial' => {CSV => 1, DBM => 1, SQLite => 1},
+                       'limit_offset' => {CSV => 1, DBM => 1, SQLite2 => 1},
+                       'serial' => {CSV => 1, DBM => 1, SQLite => 1, SQLite2 => 1},
     );
 
 for my $testdb (@handles) {
