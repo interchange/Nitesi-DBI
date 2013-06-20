@@ -343,7 +343,7 @@ Carts are stored in the C<carts> and C<carts_products> table.
       password varchar(255) NOT NULL DEFAULT '',
       first_name varchar(255) NOT NULL DEFAULT '',
       last_name varchar(255) NOT NULL DEFAULT '',
-      last_login datetime NOT NULL,
+      last_login integer NOT NULL DEFAULT 0,
       created datetime NOT NULL,
       modified datetime NOT NULL,
       inactive boolean NOT NULL DEFAULT FALSE
