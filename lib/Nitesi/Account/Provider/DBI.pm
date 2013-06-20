@@ -3,10 +3,8 @@ package Nitesi::Account::Provider::DBI;
 use strict;
 use warnings;
 
-use base 'Nitesi::Object';
+use Moo;
 use Nitesi::Query::DBI;
-
-__PACKAGE__->attributes(qw/dbh crypt fields/);
 
 =head1 NAME
 
@@ -14,11 +12,7 @@ Nitesi::Account:Provider::DBI - DBI Account Provider for Nitesi Shop Machine
 
 =cut
 
-=head1 METHODS
-
-=head2 init
-
-Initializer for this class. Arguments are:
+=head1 ATTRIBUTES
 
 =over 4
 
@@ -35,20 +29,31 @@ L<Account::Manager::Password> instance (required).
 List of fields (as array reference) to be retrieved from the
 database and put into account data return by login method.
 
-=item inactive
-
-Name of field which determines whether user is disabled.
-
 =back
 
 =cut
 
-sub init {
-    my ($self, %args) = @_;
-    my ($sql);
+has dbh => (
+    is => 'rw',
+);
 
-    $self->{sql} = Nitesi::Query::DBI->new(dbh => $self->{dbh});
-}
+has crypt => (
+    is => 'rw',
+);
+
+has fields => (
+    is => 'rw',
+);
+
+has sql => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {my $self = shift;
+                    Nitesi::Query::DBI->new(dbh => $self->{dbh});
+                },
+);
+
+=head1 METHODS
 
 =head2 login
 
@@ -89,7 +94,7 @@ sub login {
             return 0;
         }
 
-        if ($self->{crypt}->check($ret->{password}, $args{password})) {
+        if ($self->crypt->check($ret->{password}, $args{password})) {
             # initialize account and return data
             return $self->_account_init($ret);
         }
@@ -114,7 +119,7 @@ sub create {
 
     $args{created} ||= \['now()'];
         
-    $uid = $self->{sql}->insert('users', {%args});
+    $uid = $self->sql->insert('users', {%args});
     return $uid;
 }
 
@@ -128,7 +133,7 @@ sub delete {
     my ($self, $uid) = @_;
     my ($ret);
     
-    $ret = $self->{sql}->delete(table => 'users',
+    $ret = $self->sql->delete(table => 'users',
                                 where => {uid => $uid});
 
     return $ret;
@@ -147,7 +152,7 @@ sub roles {
     if ($args{map}) {
 	my (%map, $record, $role_refs);
 
-	$role_refs = $self->{sql}->select(fields => [qw/roles.rid roles.name/],
+	$role_refs = $self->sql->select(fields => [qw/roles.rid roles.name/],
 			     join => [qw/user_roles rid=rid roles/],
 			     where => {uid => $uid});
 
@@ -158,12 +163,12 @@ sub roles {
 	return \%map;
     }
     elsif ($args{numeric}) {
-	@roles = $self->{sql}->select_list_field(table => 'user_roles', 
+	@roles = $self->sql->select_list_field(table => 'user_roles', 
 					     fields => [qw/rid/], 
 					     where => {uid => $uid});
     }
     else {
-	@roles = $self->{sql}->select_list_field(fields => [qw/roles.name/],
+	@roles = $self->sql->select_list_field(fields => [qw/roles.name/],
 						 join => [qw/user_roles rid=rid roles/],
 						 where => {uid => $uid});
     }
@@ -182,7 +187,7 @@ sub permissions {
     my ($self, $uid, $roles_ref) = @_;
     my (@records, @permissions, $sth, $row, $roles_str);
 
-    @permissions = $self->{sql}->select_list_field(table => 'permissions',
+    @permissions = $self->sql->select_list_field(table => 'permissions',
 						   fields => [qw/perm/],
 						   where => [{uid => $uid}, {rid => {-in => $roles_ref}}]);
 	
@@ -207,7 +212,7 @@ sub value {
 	    # set value
 	    $value = shift;
 
-	    $self->{sql}->update(table => 'users',
+	    $self->sql->update(table => 'users',
 				 set => {$name => $value},
 				 where => {uid => $uid}); 
 
@@ -215,7 +220,7 @@ sub value {
 	}
 
 	# retrieve value
-	$value = $self->{sql}->select_field(table => 'users',
+	$value = $self->sql->select_field(table => 'users',
 					    field => $name,
 					    where => {uid => $uid});
 
@@ -237,7 +242,7 @@ sub password {
 
     if ($username) {
 	if ($uid = $self->exists($username)) {
-	    $self->{sql}->update('users', 
+	    $self->sql->update('users', 
 				 {password => $password}, 
 				 {uid => $uid});
 
@@ -256,7 +261,7 @@ sub exists {
     my ($self, $username) = @_;
     my ($results);
 
-    $results = $self->{sql}->select_field(table => 'users',
+    $results = $self->sql->select_field(table => 'users',
 					  fields => ['uid'],
 					  where => {username => $username});
 
@@ -290,7 +295,7 @@ sub load {
     my ($self, $uid) = @_;
     my ($results);
 
-    $results = $self->{sql}->select(table => 'users',
+    $results = $self->sql->select(table => 'users',
                                     where => {uid => $uid});
 
     if (@$results == 1) {
@@ -316,7 +321,7 @@ sub _account_retrieve {
 
     $conds{username} = $argref->{username};
 
-    $results = $self->{sql}->select(table => 'users',
+    $results = $self->sql->select(table => 'users',
                                     fields => join(',', @fields),
                                     where => \%conds);
 

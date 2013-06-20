@@ -72,27 +72,22 @@ Deleting data from one table.
 		            where => {uid => 1});
 =cut
 
-use base 'Nitesi::Object';
-
-__PACKAGE__->attributes(qw/dbh sqla/);
+use Moo;
 
 use SQL::Abstract;
 use SQL::Abstract::More;
 
+has dbh => (
+    is => 'ro',
+);
+
+has sqla => (
+    is => 'rw',
+    lazy => 1,
+    default => sub {SQL::Abstract::More->new()},
+);
+
 =head1 METHODS
-
-=head2 init
-
-Initializer, embeds L<SQL::Abstract::More> object inside our Nitesi::Query::DBI
-object.
-
-=cut
-
-sub init {
-    my ($self, %args) = @_;
-
-    $self->{sqla} = SQL::Abstract::More->new();
-}
 
 =head2 select
 
@@ -193,7 +188,7 @@ sub select {
     }
 
     eval {
-	($stmt, @bind) = $self->{sqla}->select(@sql_params);
+	($stmt, @bind) = $self->sqla->select(@sql_params);
     };
 
     if ($@) {
@@ -266,7 +261,7 @@ sub insert {
     my ($self, @args) = @_;
     my ($stmt, @bind, $ret, @keys);
 
-    ($stmt, @bind) = $self->{sqla}->insert(@args);
+    ($stmt, @bind) = $self->sqla->insert(@args);
 
     $ret = $self->_run($stmt, \@bind, return_value => 'execute');
 
@@ -319,13 +314,13 @@ sub update {
 
     if (@_ == 2 || @_ == 3) {
 	# positional parameters (table, updates, where)
-	($stmt, @bind) = $self->{sqla}->update(@_);
+	($stmt, @bind) = $self->sqla->update(@_);
     }
     else {
 	# named parameters
 	my %args = @_;
 
-	($stmt, @bind) = $self->{sqla}->update($args{table}, $args{set}, $args{where});
+	($stmt, @bind) = $self->sqla->update($args{table}, $args{set}, $args{where});
     }
 
     $self->_run($stmt, \@bind, return_value => 'execute');
@@ -351,12 +346,12 @@ sub delete {
 
     if (@_ == 1 || @_ == 2) {
 	# positional parameters (table, where)
-	($stmt, @bind) = $self->{sqla}->delete(@_);
+	($stmt, @bind) = $self->sqla->delete(@_);
     }
     else {
 	# named parameters
 	my %args = @_;
-	($stmt, @bind) = $self->{sqla}->delete($args{table}, $args{where});
+	($stmt, @bind) = $self->sqla->delete($args{table}, $args{where});
     }
 
     $self->_run($stmt, \@bind, return_value => 'execute');
@@ -420,7 +415,7 @@ sub _create_table {
     my ($self, $table, $fields) = @_;
     my ($stmt, @bind);
 
-    $stmt = $self->{sqla}->generate('create table', \$table, $fields);
+    $stmt = $self->sqla->generate('create table', \$table, $fields);
 
     $self->_run($stmt, [], return_value => 'execute');
 }
@@ -429,7 +424,7 @@ sub _drop_table {
     my ($self, $table, $fields) = @_;
     my ($stmt, @bind);
 
-    $stmt = $self->{sqla}->generate('drop table', \$table);
+    $stmt = $self->sqla->generate('drop table', \$table);
 
     $self->_run($stmt, [], return_value => 'execute');
 }
