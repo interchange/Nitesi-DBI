@@ -1,5 +1,16 @@
 Revision history for Nitesi::DBI
 
+0.0090 Thu Jun 20 09:22:36 2013 CEST
+
+    [API CHANGES]
+
+    * Use integer type for last_login field in users.
+
+    [ENHANCEMENTS]
+
+    * Replace Nitesi::Object with Moo.
+    * Add support for last_login to account provider.
+
 0.0082 Sun Jun 16 13:13:09 2013 CEST
 
     [BUG FIXES]
