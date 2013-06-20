@@ -310,7 +310,7 @@ sub _account_retrieve {
     my ($self, $argref) = @_;
     my (@fields, %conds, $results);
 
-    @fields = qw/uid username password/;
+    @fields = qw/uid username password last_login/;
 
     if (defined $self->{fields}) {
         push @fields, @{$self->{fields}};
@@ -347,6 +347,13 @@ sub _account_init {
     $acct{username} = $record->{username};
     $acct{roles} = [values %$roles_map];
     $acct{permissions} = \@permissions;
+    $acct{last_login} = $record->{last_login} || 0;
+
+    # update last login in database
+    $self->sql->update(table => 'users',
+                       where => {uid => $acct{uid}},
+                       set => {last_login => time},
+                       );
 
     return \%acct;
 }
