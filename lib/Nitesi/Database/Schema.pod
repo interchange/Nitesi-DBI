@@ -315,6 +315,7 @@ Carts are stored in the C<carts> and C<carts_products> table.
       code integer NOT NULL,
       name character varying(255) DEFAULT '' NOT NULL,
       uid integer DEFAULT 0 NOT NULL,
+      session_id character varying(255) DEFAULT '' NOT NULL,
       created integer DEFAULT 0 NOT NULL,
       last_modified integer DEFAULT 0 NOT NULL,
       type character varying(32) DEFAULT '' NOT NULL,
