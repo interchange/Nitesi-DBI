@@ -287,6 +287,8 @@ sub load {
     $info = $self->api_info->{$self->base_role};
     $key = $info->{key};
 
+    return unless $self->$key;
+
     $field_ref = $self->_db_fields;
 
     $sql = $self->_build_query('select',
