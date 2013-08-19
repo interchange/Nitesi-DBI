@@ -702,7 +702,12 @@ sub _manage_assignments {
 
     # handle subclassed Nitesi roles
     if (exists $info_from->{base}) {
-        $role_from = $info_from->{base};
+        if (exists $info->{assign}->{$info_from->{base}}) {
+            $role_from = $info_from->{base};
+        }
+        else{
+            $role_from = $info_from->{inherit};
+        }
     }
 
     # determine assignment parameters
