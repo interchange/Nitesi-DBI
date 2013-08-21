@@ -1,5 +1,19 @@
 Revision history for Nitesi::DBI
 
+0.0091 Wed Aug 21 11:48:44 2013 CEST
+
+    [BUG FIXES]
+
+    * Avoid trying to load entities without key in DBI backend.
+    * Check whether there is a base role when handling subclasses for
+      assignments.
+       
+    [DOCUMENTATION]
+
+    * Add session_id to carts table in database schema.
+    * Get rid of "::character varying" as default value in the database schema.
+    * Fix mistakes in definition of carts table in database schema.
+
 0.0090 Thu Jun 20 09:22:36 2013 CEST
 
     [API CHANGES]
