@@ -191,7 +191,14 @@ Menus and (product) categories are stored in the C<navigation> table.
 
 =item uri
 
-Full or relative URL.
+URL for the link to the navigation element.
+Starts with the URL of the parent navigation element.
+
+E.g. for parent element "Europe" and child element "Germany" 
+you get as uri values:
+
+     Europe
+     Europe/Germany
 
 =item type
 
@@ -201,6 +208,10 @@ Navigation type, e.g. menu or category.
 
 Scope related to type, menu name for menus
 or categorization (brand, star) for categories.
+
+=item parent
+
+Pointer to the parent navigation element.
 
 =item count
 
