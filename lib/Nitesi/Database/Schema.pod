@@ -96,6 +96,11 @@ Product can be delivered in a few days.
 Product can be delivered, but it takes
 longer than a few days.
 
+=item unknown
+
+Product can be delivered, but we have no idea
+how long it takes.
+
 =item not available
 
 Product is sold out or discontinued.
