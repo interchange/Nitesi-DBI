@@ -87,6 +87,11 @@ has sqla => (
     default => sub {SQL::Abstract::More->new()},
 );
 
+has log_queries => (
+    is => 'rw',
+);
+
+
 =head1 METHODS
 
 =head2 select
@@ -361,8 +366,8 @@ sub _run {
     my ($self, $stmt, $bind_ref, %args) = @_;
     my ($sth, $row, @result, $ret);
 
-    if ($self->{log_queries}) {
-        $self->{log_queries}->($stmt, $bind_ref, \%args);
+    if ($self->log_queries) {
+        $self->log_queries->($stmt, $bind_ref, \%args);
     }
 
     unless ($sth = $self->{dbh}->prepare($stmt)) {
