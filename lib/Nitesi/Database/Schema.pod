@@ -183,6 +183,9 @@ Menus and (product) categories are stored in the C<navigation> table.
       scope varchar(32) NOT NULL DEFAULT '',
       name varchar(255) NOT NULL DEFAULT '',
       description text NOT NULL DEFAULT '',
+      template varchar(255) NOT NULL DEFAULT '',
+      language varchar(8) NOT NULL DEFAULT '',
+      alias integer NOT NULL DEFAULT 0,
       parent integer NOT NULL DEFAULT 0,
       priority integer NOT NULL DEFAULT 0,
       count integer NOT NULL DEFAULT 0,
@@ -213,6 +216,19 @@ Navigation type, e.g. menu or category.
 
 Scope related to type, menu name for menus
 or categorization (brand, star) for categories.
+
+=item template
+
+Template used for this navigation element. This is used usually
+in conjunction with menu elements.
+
+=item language
+
+Language for this navigation element.
+
+=item alias
+
+Pointer to the original navigation element.
 
 =item parent
 
