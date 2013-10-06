@@ -1,6 +1,7 @@
 package Nitesi::Backend::DBI;
 
 use Moo::Role;
+use Nitesi::Provider::Object qw/api_object/;
 
 =head1 NAME
 
@@ -263,15 +264,22 @@ sub search {
     # search database
     $set = $self->query->select(%$sql);
 
+    my @oo_list;
+    
     for my $record (@$set) {
         while (($name, $map) = each %$field_ref) {
             if ($map) {
                 $record->{$map} = delete $record->{$name};
             }
         }
+
+        push @oo_list, api_object(backend => 'DBI',
+                                  class => $self->base_role,
+                                  name => $self->api_info->{$self->base_role}->{table},
+                                  record => $record);
     }
 
-    return $set;
+    return \@oo_list;
 }
 
 =head2 load
