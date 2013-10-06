@@ -70,6 +70,21 @@ Deleting data from one table.
     $roles = $query->select(join => [qw/user_roles rid=rid roles/],
                             fields => [qw/roles.rid roles.name/],
 		            where => {uid => 1});
+
+=head1 ATTRIBUTES
+
+=head2 dbh
+
+DBI database handle.
+
+=head2 sqla
+
+L<SQL::Abstract::More> object.
+
+=head2 log_queries
+
+Code reference use to log queries.
+
 =cut
 
 use Moo;
