@@ -1,5 +1,20 @@
 Revision history for Nitesi::DBI
 
+0.0092 Sun Oct  6 12:26:49 2013 EDT
+
+    [ENHANCEMENTS]
+
+    * Use api_object function to fill search results with real objects.
+
+    [BUG FIXES]
+
+    * Reintroduce support for log_queries (GH #1, Marco Pessotto)
+
+    [DOCUMENTATION]
+
+    * Add template, language and alias fields to navigation table in database schema.
+    * Add description of attributes to Nitesi::Query::DBI.
+
 0.0091 Wed Aug 21 11:48:44 2013 CEST
 
     [BUG FIXES]
