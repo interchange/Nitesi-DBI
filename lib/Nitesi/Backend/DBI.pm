@@ -617,9 +617,7 @@ sub _build_query {
 
     if ($left_join) {
         if ($args{where}) {
-            my ($name, $value);
-
-            while (($name, $value) = each %{$args{where}}) {
+            for my $name (keys %{$args{where}}) {
                 if ($name =~ /^\w+$/) {
                     # prefix with base table
                     $args{where}->{"$info->{table}.$name"}
