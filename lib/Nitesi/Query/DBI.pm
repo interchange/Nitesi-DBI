@@ -212,7 +212,8 @@ sub select {
     };
 
     if ($@) {
-	die "Failed to parse select parameters (", join(',', @sql_params) , ": $@\n";
+        my @dump_params = map { defined $_ ? $_ : 'undef' } @sql_params;
+        die "Failed to parse select parameters (", join(',', @dump_params) , ": $@\n";
     }
 
     return $self->_run($stmt, \@bind, %args);
